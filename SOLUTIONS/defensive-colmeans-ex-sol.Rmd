@@ -1,0 +1,43 @@
+## Toll! Means!
+
+Hier geht es einmal mehr um *Defensives Denken* -- also darum, robuste Programme zu schreiben, die mögliche Probleme antizipieren und abprüfen um diese dann abzufangen und/oder
+informative, präzise Warn- oder Fehlermeldungen auszugeben.
+
+Modifizieren Sie die Funktion `col_means()` so, dass alle mitgelieferten Tests
+funktionieren oder zumindest hilfreiche Fehlermeldungen erzeugen. Benutzen Sie keine Zusatzpakete außer `checkmate`.
+
+```{r, col_means_exdef, eval=FALSE}
+# compute means of all numeric columns in df
+# output: a data.frame
+col_means <- function(df, na.rm = FALSE) {
+  # falls der Dataframe keine Zeilen bzw. Spalten hat:
+  if (checkmate::test_data_frame(df, nrows = 0) |
+    checkmate::test_data_frame(df, ncols = 0)) {
+    warning("Dataframe enthält 0 Zeilen oder 0 Spalten.")
+    df <- NULL
+  }
+
+  # falls die Spalte ein Character oder Factor ist:
+  if (checkmate::test_data_frame(df, types = c("character", "factor"))) {
+    warning("Kein Mean moeglich bei Factor bzw. Character Spalte.")
+  }
+
+  # damit auch ein einzelner Vektor die gleiche Dimension hat, d.h. zeilenweise in der erzeugten df anordnen:
+  df <- as.data.frame(df, byrow = TRUE)
+
+  numeric <- vapply(df, is.numeric, logical(1))
+  numeric_cols <- df[, numeric, drop = FALSE]
+  
+  # falls na.rm = TRUE -> colmeans() ohne NAs, sonst Berechnung mit NAs:
+  data.frame(lapply(numeric_cols, mean, na.rm = na.rm))
+}
+
+# beispiel:
+df1 <- data.frame(b = c("a", 1, 4, "b"))
+
+df2 <- data.frame(a = c(1:3), b = c(NA, 2, 3))
+col_means(df2)
+col_means(df2, na.rm = TRUE)
+
+# Entschuldigung fuer die unheimliche Verspaetung!!! :(
+```
